@@ -50,4 +50,4 @@ def create_draft_entry(locale, keyword, product, content):
         print("Status:", response.status_code)
         print("Mensaje:", response.text)
 
-    return response
+    return response.json()

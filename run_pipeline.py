@@ -7,7 +7,8 @@ from contentful_client import create_draft_entry
 import logging
 
 from logging_setup import JsonFormatter
-
+from dotenv import load_dotenv
+load_dotenv()
 
 # JSON logger configuration
 handler = logging.StreamHandler()
@@ -54,8 +55,8 @@ def main():
 
                 content = check_content_quality(content, locale, keyword)
                 
-                response=create_draft_entry(locale, keyword, product_example, content)
-                logger.info("Draft sucessfully created", extra={"locale": locale, "keyword": keyword, "response": response.status_code})
+                create_draft_entry(locale, keyword, product_example, content)
+                #logger.info("Draft sucessfully created", extra={"locale": locale, "keyword": keyword, "response": response.status_code})
 
                 
                 # Here we see the raw response in console
@@ -64,7 +65,7 @@ def main():
 
             except Exception as e:
                 # retry is already handled in create_draft_entry; here we just log
-                logger.info("Draft sucessfully created", extra={"locale": locale, "keyword": keyword, "response": response.status_code})
+                #logger.info("Draft sucessfully created", extra={"locale": locale, "keyword": keyword, "response": response.status_code})
                 print(f"❌ Error con {locale} | {keyword} : {e}")
                 print("\n--- MODEL RESPONSE WHEN THERE'S AN ERROR  ---")
                 print(content)
