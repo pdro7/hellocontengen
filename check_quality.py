@@ -3,7 +3,7 @@
 import logging
 from ai_client import generate_content
 from content_validator import check_body_contains_keyword, check_title_length, is_fully_localized
-
+from templates import tpl
 
 logger = logging.getLogger("pipeline")
 
@@ -15,9 +15,14 @@ def check_content_quality(content, locale, keyword):
     # Check title length
     if not check_title_length(content["title"]):
         print(f"❌ [{locale}|{keyword}] Title too long ({len(content['title'])} chars)")
-        correction = generate_content(f""" The title "{content['title']}" is too long ({len(content['title'])} chars).
-                        Please return **only** a new JSON object with a `title` field ≤ 60 chars.""")
+
+        #correction = generate_content(f""" The title "{content['title']}" is too long ({len(content['title'])} chars).
+         #               Please return **only** a new JSON object with a `title` field ≤ 60 chars.""")
+
+        correction = generate_content(tpl.module.correction_title(content['title'], len(content['title'])))
+        
         new_title = correction["title"]
+        
         if check_title_length(new_title):
             content["title"] = new_title
         else:
@@ -36,8 +41,9 @@ def check_content_quality(content, locale, keyword):
 
     # Check keyword in body
     if not check_body_contains_keyword(content["body"], keyword):
-        correction = generate_content(f"""The body you generated does not include the keyword "{keyword}".
-                                        Please return **only** a JSON object with a new `body` field that **must** include that keyword.""")
+        #correction = generate_content(f"""The body you generated does not include the keyword "{keyword}".
+         #                               Please return **only** a JSON object with a new `body` field that **must** include that keyword.""")
+        correction = generate_content(tpl.module.correct_kw_in_body(content["body"], keyword))
 
         content["body"] = correction["body"]
     else:

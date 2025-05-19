@@ -1,94 +1,118 @@
-# HelloPrint Multilingual Content Generator
+# HelloPrint Product Description draft Content Generator for Contentful
 
-A Python-based pipeline that generates multilingual marketing content using OpenAI GPT and publishes to Contentful CMS.
+A Python-based pipeline that generates multilingual marketing content for products using OpenAI's GPT models and publishes drafts to Contentful CMS.
 
-## Core Features
+## Project Overview
 
-- **Multilingual Generation**: Creates content in English, Dutch and Portuguese
-- **Language Validation**: Ensures content is properly localized using OpenAI
-- **CMS Integration**: Publishes draft entries to Contentful
-- **Structured Logging**: JSON-formatted execution logs
+This pipeline automates the creation of product marketing content in multiple languages:
+- Generates SEO-optimized product descriptions based on keywords
+- Validates that content is properly localized in target languages
+- Publishes drafts to Contentful CMS
+- Tracks execution with structured JSON logging
 
 ## Project Structure
 
 ```
 HelloPrint/
-├── ai_client.py           # OpenAI integration for content generation
-├── contentful_client.py   # Contentful CMS API client
-├── keywords.csv          # Input keywords for content generation
-├── content_validator.py     # Language validation using OpenAI
-├── logging_setup.py      # JSON logging configuration
-├── pipeline.py           # Core pipeline orchestration
-├── products.csv         # Product data for content generation
-├── run_pipeline.py      # Main execution script
-├── templates.py         # Basic content templates
-
+├── ai_client.py           # OpenAI API integration
+├── contentful_client.py   # Contentful CMS publishing client
+├── keywords.csv           # Target keywords for content generation
+├── lang_validator.py      # Language validation using OpenAI
+├── logging_setup.py       # JSON logging configuration
+├── pipeline.py            # Core data loading and processing
+├── products.csv           # Product information data
+├── run_pipeline.py        # Main execution script
+└── templates/             # Content generation templates
+    └── prompts.jinja      # Jinja2 templates for AI prompts
 ```
 
 ## Setup
 
 ### Requirements
 - Python 3.8+
-- Dependencies:
-```sh
-pip install openai requests jinja2 python-dotenv tenacity
-```
+- Required packages:
+  ```
+  openai
+  requests
+  python-dotenv
+  tenacity
+  jinja2
+  ```
 
 ### Configuration
-Create `.env` file with:
-```ini
-OPENAI_API_KEY=your-key
-CONTENTFUL_SPACE_ID=your-space
-CONTENTFUL_ENVIRONMENT=master
-CONTENTFUL_ACCESS_TOKEN=your-token
+Create a `.env` file in the project root with:
+```
+OPENAI_API_KEY="your_api_key"
+CONTENTFUL_SPACE_ID="your_space_id"
+CONTENTFUL_ENVIRONMENT="master"
+CONTENTFUL_ACCESS_TOKEN="your_access_token"
 ```
 
 ## Usage
 
-1. Update input data:
-   - `products.csv`: Product catalog
-   - `keywords.csv`: Target keywords by locale
+1. **Prepare Input Data**
+   - Update `products.csv` with product information
+   - Modify `keywords.csv` with target keywords per locale
 
-2. Run pipeline:
-```sh
-python run_pipeline.py
-```
+2. **Run Pipeline**
+   ```
+   python run_pipeline.py
+   ```
 
-3. Check Contentful for generated drafts
+3. **View Results**
+   - Check Contentful for created draft entries
+   - Review logs in `logs/pipeline.json`
 
 ## Technical Details
 
-### Content Model
-- Content type: `marketingContent`
-- Fields:
-  - title (localized)
-  - body (localized) 
-  - slug (auto-generated)
-  - keywords
-  - category
+### AI Content Generation
+- Uses OpenAI's GPT-4o-mini model
+- Structured JSON output format for consistent content
+- Retry mechanism for API reliability
+- Language validation to ensure proper localization
 
-### Supported Locales
+### Contentful Integration
+- Creates entries of type `marketingContent`
+- Populates multilingual fields (title, body, slug, keywords, category)
+- Generates SEO-friendly slugs from keywords
+- Error handling with detailed logging
+
+### Supported Languages
 - English (en_US)
-- Dutch (nl_NL) 
+- Dutch (nl_NL)
 - Portuguese (pt_BR)
 
-### Error Handling
-- Automatic retries for API calls
-- Language validation per locale
-- JSON-formatted error logs
-
-### Logging
-- Location: `logs/pipeline.json`
-- Format: Structured JSON
-- Fields: timestamp, locale, status, errors
+### Data Processing
+- Keywords selection based on locale
+- Product catalog processing
+- Slug generation and normalization
 
 ## Customization
 
-- Content templates: `templates2.py`
-- Validation rules: `lang_validator.py`
-- Product data: `products.csv`
-- Keywords: `keywords.csv`
+- **Products**: Update `products.csv` with custom product information
+- **Keywords**: Modify `keywords.csv` to target specific SEO terms
+- **Templates**: Adjust AI prompts in `templates/prompts.jinja`
+- **Locales**: Configure supported languages in `run_pipeline.py`
+- **Content Model**: Adjust field mapping in `contentful_client.py`
+
+## Logging
+
+All operations are logged to `logs/pipeline.json` with:
+- Timestamp
+- Operation type
+- Status (success/error)
+- Content details (locale, keyword)
+- Error messages (when applicable)
+
+## Error Handling
+
+- Automatic retries for API calls (using tenacity)
+- Language validation to ensure content is in correct language
+- Structured error messages in logs
 
 ## License
 
 MIT
+
+
+

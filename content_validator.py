@@ -1,6 +1,7 @@
 # ai_validation.py
 import os
 from openai import OpenAI
+from templates import tpl
 
 # Initialize the client once
 _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -10,28 +11,22 @@ def is_fully_localized(text: str, locale: str) -> bool:
     Ask the LLM if the `text` is written exclusively in the
     language associated with `locale`. Returns True if it is so.
     """
-    # Simple mapping from locale to language name for the prompt
-    lang_map = {
-        "en_US": "English",
-        "nl_NL": "Dutch",
-        "pt_BR": "Portuguese",
-        # add more locales if needed
-    }
-    target_language = lang_map.get(locale)
-    # If en_US, we assume it's always in English
-    if locale == "en_US" or not target_language:
-        return True
-
     # Build the validation prompt
+    
+    
+    validation_prompt = tpl.module.validate_language(locale,text)
+
+    '''
     validation_prompt = (
         f"I need you to check that the following text is written "
-        f"100% in {target_language}, with no words, phrases, or sentences "
+        f"100% in {locale}, with no words, phrases, or sentences "
         f"in any other language. "
         f"Answer only 'yes' or 'no'.\n\n"
         f"---\n"
         f"{text}\n"
         f"---"
     )
+    '''
 
     resp = _client.chat.completions.create(
         model="gpt-4o-mini",

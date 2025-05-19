@@ -18,9 +18,9 @@ def select_keywords(keywords, locales, n=3):
         by_locale[loc] = random.sample(filt, min(n, len(filt)))
     return by_locale
 
-if __name__ == "__main__":
-    keywords = load_keywords()
-    products = load_products()
-    locales = ["en-US", "nl-NL"] 
-    sel = select_keywords(keywords, locales, n=3)
-    print(sel)
+#if __name__ == "__main__":
+   #keywords = load_keywords()
+    #products = load_products()
+    #locales = ["en-US", "nl-NL"] 
+    #sel = select_keywords(keywords, locales, n=1)
+    #print(sel)

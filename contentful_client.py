@@ -4,7 +4,8 @@ import requests
 from tenacity import retry, stop_after_attempt, wait_fixed
 import json
 
-
+from dotenv import load_dotenv
+load_dotenv()
 
 # Loading Contentful credentials
 SPACE = os.getenv('CONTENTFUL_SPACE_ID')

@@ -1,9 +1,10 @@
 # run_pipeline.py
 from check_quality import check_content_quality
 from pipeline import load_keywords, load_products, select_keywords
-from templates import PROMPT_TMPL
+#from templates import PROMPT_TMPL
 from ai_client import generate_content
 from contentful_client import create_draft_entry
+from templates import tpl
 import logging
 
 from logging_setup import JsonFormatter
@@ -27,18 +28,19 @@ def main():
     keywords = load_keywords()
     products = load_products()
     locales = ["en-US", "nl-NL"] 
-    sel = select_keywords(keywords, locales, n=3)
+    sel = select_keywords(keywords, locales, n=1)
     print("Keywords selection by locale:", sel)
 
     # Choose a single example product
-    product_example = products[1]
+    product_example = products[2]
     
 
 
     for locale, kw_list in sel.items():
         for keyword in kw_list:
             
-            prompt = PROMPT_TMPL.render(
+            #prompt = PROMPT_TMPL.render(
+            prompt = tpl.module.generation_prompt(
                 locale=locale,
                 keyword=keyword,
                 product_name=product_example["product_name"],
