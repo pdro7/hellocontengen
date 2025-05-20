@@ -1,6 +1,6 @@
 # HelloPrint Product Description draft Content Generator for Contentful
 
-A Python-based pipeline that generates multilingual marketing content for products using OpenAI's GPT models and publishes drafts to Contentful CMS.
+A Python-based pipeline that generates multilingual marketing content for products using OpenAI and publishes to Contentful CMS.
 
 ## Project Overview
 
@@ -14,14 +14,18 @@ This pipeline automates the creation of product marketing content in multiple la
 
 ```
 HelloPrint/
-├── ai_client.py           # OpenAI API integration
-├── contentful_client.py   # Contentful CMS publishing client
-├── keywords.csv           # Target keywords for content generation
-├── lang_validator.py      # Language validation using OpenAI
-├── logging_setup.py       # JSON logging configuration
-├── pipeline.py            # Core data loading and processing
-├── products.csv           # Product information data
-├── run_pipeline.py        # Main execution script
+├── src/                   # Source code directory
+│   ├── ai_client.py       # OpenAI API integration
+│   ├── contentful_client.py # Contentful CMS publishing client
+│   ├── lang_validator.py  # Language validation using OpenAI
+│   ├── logging_setup.py   # JSON logging configuration
+│   ├── pipeline.py        # Core data loading and processing
+│   └── run_pipeline.py    # Main execution script
+├── data/                  # Data directory
+│   ├── keywords.csv       # Target keywords for content generation
+│   └── products.csv       # Product information data
+├── logs/                  # Logging directory
+│   └── pipeline.json      # Pipeline execution logs
 └── templates/             # Content generation templates
     └── prompts.jinja      # Jinja2 templates for AI prompts
 ```
@@ -51,12 +55,12 @@ CONTENTFUL_ACCESS_TOKEN="your_access_token"
 ## Usage
 
 1. **Prepare Input Data**
-   - Update `products.csv` with product information
-   - Modify `keywords.csv` with target keywords per locale
+   - Update `data/products.csv` with product information
+   - Modify `data/keywords.csv` with target keywords per locale
 
 2. **Run Pipeline**
    ```
-   python run_pipeline.py
+   python src/run_pipeline.py
    ```
 
 3. **View Results**
@@ -89,11 +93,20 @@ CONTENTFUL_ACCESS_TOKEN="your_access_token"
 
 ## Customization
 
-- **Products**: Update `products.csv` with custom product information
-- **Keywords**: Modify `keywords.csv` to target specific SEO terms
+- **Products**: Update `data/products.csv` with custom product information
+- **Keywords**: Modify `data/keywords.csv` to target specific SEO terms
 - **Templates**: Adjust AI prompts in `templates/prompts.jinja`
-- **Locales**: Configure supported languages in `run_pipeline.py`
-- **Content Model**: Adjust field mapping in `contentful_client.py`
+- **Locales**: Configure supported languages in `src/run_pipeline.py`
+- **Content Model**: Adjust field mapping in `src/contentful_client.py`
+
+## Code Structure Notes
+
+The project follows a modular structure:
+- `src/pipeline.py` handles data processing and keyword selection
+- `src/ai_client.py` manages OpenAI API interaction
+- `src/contentful_client.py` handles CMS publishing
+- `src/lang_validator.py` ensures proper content localization
+- `src/run_pipeline.py` orchestrates the entire workflow
 
 ## Logging
 
