@@ -1,7 +1,9 @@
-{% raw %}
+
 
 
 {# templates/prompts.jinja #}
+
+## Main generation prompt
 
 {% macro generation_prompt(locale, keyword, product_name, price, features) -%}
 Locale: {{ locale }}
@@ -34,7 +36,7 @@ Ensure the response is a valid JSON object, ready to parse.
 {%- endmacro %}
 
 
-
+## Correction tittle prompt
 
 {% macro correction_title(bad_title, length) -%}
 The title you generated ("{{ bad_title }}") is too long ({{ length }} chars).
@@ -49,7 +51,7 @@ Ensure the response is a valid JSON object, ready to parse.
 {%- endmacro %}
 
 
-
+## Correction keyword in body prompt
 
 {% macro correct_kw_in_body(body, keyword) -%}
 
@@ -63,19 +65,20 @@ Please return **only** a JSON object with a single field `body` that **must** in
 
 
 
-
+## Check full locale language validation prompt
 
 {% macro validate_language(text, language_name) -%}
 
 Check that the following text is written 100% in {{ language_name }} (no mixing of other languages).  
 Please answer **only** "yes" or "no".
 
----
+
 {{ text }}
----
+
 {%- endmacro %}
 
 
+## Correct mixing language prompt
 {% macro correction_language(text, locale) -%}
 
 Re-write the following text {{ text }}, it needs to be 100% in the language {{ locale }} (no mixing of other languages).  
@@ -87,4 +90,3 @@ Please return **only** a JSON object with a single field `body` field containing
 {%- endmacro %}
 
 
-{% endraw %}
