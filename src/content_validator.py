@@ -1,7 +1,7 @@
 # ai_validation.py
 import os
 from openai import OpenAI
-from templates import tpl
+from templates_loader import tpl
 
 # Initialize the client once
 _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))

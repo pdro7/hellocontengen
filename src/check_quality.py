@@ -3,7 +3,7 @@
 import logging
 from ai_client import generate_content
 from content_validator import check_body_contains_keyword, check_title_length, is_fully_localized
-from templates import tpl
+from templates_loader import tpl
 
 logger = logging.getLogger("pipeline")
 MAX_CORRECTIONS = 3

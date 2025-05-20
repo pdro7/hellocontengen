@@ -17,13 +17,17 @@ HelloPrint/
 ├── src/                   # Source code directory
 │   ├── ai_client.py       # OpenAI API integration
 │   ├── contentful_client.py # Contentful CMS publishing client
+│   ├── content_validator.py # Content validation utilities
 │   ├── lang_validator.py  # Language validation using OpenAI
 │   ├── logging_setup.py   # JSON logging configuration
 │   ├── pipeline.py        # Core data loading and processing
-│   └── run_pipeline.py    # Main execution script
+│   ├── run_pipeline.py    # Main execution script
+│   └── templates_loader.py # Template loading utilities
 ├── data/                  # Data directory
 │   ├── keywords.csv       # Target keywords for content generation
 │   └── products.csv       # Product information data
+├── tests/                 # Test directory
+│   └── test_validator.py  # Unit tests for content validation
 ├── logs/                  # Logging directory
 │   └── pipeline.json      # Pipeline execution logs
 └── templates/             # Content generation templates
@@ -41,6 +45,7 @@ HelloPrint/
   python-dotenv
   tenacity
   jinja2
+  pytest (for testing)
   ```
 
 ### Configuration
@@ -75,8 +80,13 @@ CONTENTFUL_ACCESS_TOKEN="your_access_token"
 - Retry mechanism for API reliability
 - Language validation to ensure proper localization
 
+### Content Validation
+- Title length check (maximum 60 characters)
+- Keyword presence verification
+- Language validation to ensure proper localization
+
 ### Contentful Integration
-- Creates entries of type `marketingContent`
+- Creates entries of type `productDescription`
 - Populates multilingual fields (title, body, slug, keywords, category)
 - Generates SEO-friendly slugs from keywords
 - Error handling with detailed logging
@@ -85,6 +95,11 @@ CONTENTFUL_ACCESS_TOKEN="your_access_token"
 - English (en_US)
 - Dutch (nl_NL)
 - Portuguese (pt_BR)
+
+### Template Loading
+- Dynamic loading of Jinja2 templates via `templates_loader.py`
+- Support for customizable prompt templates
+- Separation of template logic from content generation
 
 ### Data Processing
 - Keywords selection based on locale
@@ -108,6 +123,22 @@ The project follows a modular structure:
 - `src/lang_validator.py` ensures proper content localization
 - `src/run_pipeline.py` orchestrates the entire workflow
 
+## Validation
+Validation rules in `src/content_validator.py`
+
+## Testing
+
+Run the test suite with:
+```
+pytest tests/
+```
+
+Tests verify:
+- Content validation functions
+- Title length constraints
+- Keyword detection in content
+- Language validation
+
 ## Logging
 
 All operations are logged to `logs/pipeline.json` with:
@@ -120,6 +151,7 @@ All operations are logged to `logs/pipeline.json` with:
 ## Error Handling
 
 - Automatic retries for API calls (using tenacity)
+- Content validation to ensure quality
 - Language validation to ensure content is in correct language
 - Structured error messages in logs
 

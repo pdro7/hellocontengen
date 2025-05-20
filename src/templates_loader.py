@@ -1,4 +1,4 @@
-# templates.py
+# templates_loader.py
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 env = Environment(

@@ -4,7 +4,7 @@ from check_quality import check_content_quality
 from pipeline import load_keywords, load_products, select_keywords
 from ai_client import generate_content
 from contentful_client import create_draft_entry
-from templates import tpl
+from templates_loader import tpl
 import logging
 
 from logging_setup import JsonFormatter
