@@ -18,7 +18,7 @@ HelloPrint/
 │   ├── ai_client.py       # OpenAI API integration
 │   ├── contentful_client.py # Contentful CMS publishing client
 │   ├── content_validator.py # Content validation utilities
-│   ├── lang_validator.py  # Language validation using OpenAI
+│   ├── check_quality.py  # Check content quality if it not OK try to correct errors
 │   ├── logging_setup.py   # JSON logging configuration
 │   ├── pipeline.py        # Core data loading and processing
 │   ├── run_pipeline.py    # Main execution script
@@ -155,9 +155,37 @@ All operations are logged to `logs/pipeline.json` with:
 - Language validation to ensure content is in correct language
 - Structured error messages in logs
 
-## License
+## Assumptions & Decisions
 
-MIT
+1. **Random Product Selection**  
+   - I randomly select one product from the provided `data/products.csv` on each run.  
+   - This demonstrates the pipeline’s ability to handle any product without hard-coding a specific ID.
+
+2. **Fixed Locales**  
+   - I focus on exactly two locales for this POC:  
+     - **United States** (`en_US`)  
+     - **Netherlands** (`nl_NL`)
+
+3. **Keyword Selection**  
+   - I filter `data/keywords.csv` by the chosen locale , then read the `Keyword` column.  
+   - Each cell in that column happens to contain three words, I assume them are the 3 keywords.  
+   - Those three keywords are then passed together in a single prompt to cover multiple SEO targets at once.
+
+4. **Main validation and quality check routines** 
+    - content_validator.py and check_quality.py work together to run checks on the generated content and in the 
+    case something fail, a correction will be executed.
+
+
+5. **Maximum Correction Attempts**  
+   - I limit each “re-prompt” loop (title length, keyword presence, language check) to **3 attempts**.  
+   - This cap helps catch most validation failures while controlling OpenAI API usage and cost.
+
+6. **100% Language Validation**  
+   - I use a Jinja macro (`correction_language`) to ask the LLM to regenerate the body text entirely in the target language.  
+   - A simple “yes”/“no” gate from the LLM determines pass/fail; in production, I might layer in a local language detector as a fallback.
+
+7. **Automated Tests**  
+   - `tests/test_validator.py` covers title length, keyword-in-body logic, and language-check 
 
 
 
