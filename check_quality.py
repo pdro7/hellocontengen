@@ -6,60 +6,129 @@ from content_validator import check_body_contains_keyword, check_title_length, i
 from templates import tpl
 
 logger = logging.getLogger("pipeline")
+MAX_CORRECTIONS = 3
 
 def check_content_quality(content, locale, keyword):
     """
     Validates and fixes content quality issues.
     Returns the validated/fixed content or None if validation fails.
     """
-    # Check title length
-    if not check_title_length(content["title"]):
-        print(f"❌ [{locale}|{keyword}] Title too long ({len(content['title'])} chars)")
+    title_ok = False
+    body_ok = False
+    lang_ok = False
 
-        #correction = generate_content(f""" The title "{content['title']}" is too long ({len(content['title'])} chars).
-         #               Please return **only** a new JSON object with a `title` field ≤ 60 chars.""")
+    # Title correction
+    for attempt in range(1, MAX_CORRECTIONS + 1):
+        
+        if check_title_length(content["title"]):
+            title_ok = True
+            break
+        
+        corr_prompt = tpl.module.correction_title(
+            bad_title=content['title'],
+            length=len(content['title'])
+        )
 
-        correction = generate_content(tpl.module.correction_title(content['title'], len(content['title'])))
-        
-        new_title = correction["title"]
-        
-        if check_title_length(new_title):
-            content["title"] = new_title
-        else:
-            content["title"] = new_title[:60].rstrip()
-            logger.warning("Título truncado tras re-prompt", 
-                            extra={"locale": locale, "keyword": keyword})
-    else:
         logger.info(
-            "Title length OK",
+            f"🔄 Title correction attempt {attempt}/{MAX_CORRECTIONS}",
+            extra={"locale": locale, "keyword": keyword, "attempts": attempt}
+        )
+
+        correction = generate_content(corr_prompt)
+        content['title'] = correction.get('title', content['title'])
+
+    if title_ok:
+        logger.info(
+        "Title length is OK",
+        extra={"extra_fields": {
+            "locale": locale,
+            "keyword": keyword,
+            "length": len(content["title"]),
+            "attempt": (f"{attempt}/{MAX_CORRECTIONS}")
+            
+        }}
+    )
+    else:
+        logger.error(
+            "Title still too long after corrections",
+            extra={"locale": locale, "keyword": keyword, "attempts": MAX_CORRECTIONS}
+        )
+            
+    
+
+      
+     #Correction keyword in body
+    for attempt in range(1, MAX_CORRECTIONS + 1):
+        if check_body_contains_keyword(content["body"], keyword):
+            body_ok = True
+            break
+        corr_prompt = tpl.module.correct_kw_in_body(
+            body=content['body'],
+            keyword=keyword
+        )
+        logger.info(
+            f"🔄 Body correction attempt {attempt}/{MAX_CORRECTIONS}",
+            extra={"locale": locale, "keyword": keyword, "attempts": attempt}
+        )
+        correction = generate_content(corr_prompt)
+        content['body'] = correction.get('body', content['body'])
+
+    if body_ok:
+        logger.info(
+            "Keyword in body is OK",
             extra={"extra_fields": {
                 "locale": locale,
                 "keyword": keyword,
-                "length": len(content["title"])
+                "length": len(content["body"]),
+                "attempt": (f"{attempt}/{MAX_CORRECTIONS}")
             }}
         )
-
-    # Check keyword in body
-    if not check_body_contains_keyword(content["body"], keyword):
-        #correction = generate_content(f"""The body you generated does not include the keyword "{keyword}".
-         #                               Please return **only** a JSON object with a new `body` field that **must** include that keyword.""")
-        correction = generate_content(tpl.module.correct_kw_in_body(content["body"], keyword))
-
-        content["body"] = correction["body"]
     else:
+        logger.error(
+            "Body still missing keyword after corrections",
+            extra={"locale": locale, "keyword": keyword, "attempts": MAX_CORRECTIONS}
+        )
+        
+    #Language correction (single-language)
+    
+    for attempt in range(1, MAX_CORRECTIONS + 1):
+        if is_fully_localized(content["body"], locale):
+            lang_ok = True
+            break
+        corr_prompt = tpl.module.correction_language(
+            text=content['body'],
+            locale=locale
+        )
         logger.info(
-            "Keyword in body OK",
-            extra={"extra_fields": {
-                "locale": locale,
-                "keyword": keyword,
-                "length": len(content["body"])
-            }}
+            f"🔄 Language correction attempt {attempt}/{MAX_CORRECTIONS}",
+            extra={"locale": locale, "keyword": keyword, "attempts": attempt}
+        )
+        correction = generate_content(corr_prompt)
+        content['body'] = correction.get('body', content['body'])
+
+    if lang_ok:
+        logger.info(
+            "Content language OK",
+            extra={"locale": locale, "keyword": keyword, "attempts": attempt}
+        )
+    else:
+        logger.error(
+            "Content still mixed-language after corrections",
+            extra={"locale": locale, "keyword": keyword, "attempts": MAX_CORRECTIONS}
         )
 
-    # Check language
-    if not is_fully_localized(content["body"], locale):
-        logger.warning("Mixed-language content detected", 
-                        extra={"locale": locale, "keyword": keyword})
-        return None
+    if title_ok and body_ok and lang_ok:
+        return content
 
-    return content
+
+    logger.error(
+        "Final validation failed",
+        extra={
+            "locale": locale,
+            "keyword": keyword,
+            "title_ok": title_ok,
+            "body_ok": body_ok,
+            "lang_ok": lang_ok
+        }
+    )
+    return None

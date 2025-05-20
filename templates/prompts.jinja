@@ -1,0 +1,84 @@
+{# templates/prompts.jinja #}
+
+{% macro generation_prompt(locale, keyword, product_name, price, features) -%}
+Locale: {{ locale }}
+Keyword: {{ keyword }}
+Product Name: {{ product_name }}
+Price: {{ price }}
+Features: {{ features }}
+
+You are a seach optimization engine expert and multilingual marketing copywriter.
+                       
+You have to create a **SEO-optimized** product page for the product "{{ product_name }}", which is a {{ category }}, mention the Estimated Lead Time: {{ lead_time }}.
+                        
+Produce all output exclusively in the language {{ locale }} , with absolutely no content in any other language.
+                       
+1) Write a **Title** (<= 60 characters). 
+2) Write a **body** of ~150 words, it should include the keywords and the {{ product_name }}.
+3) Write a **Meta description** (<= 155 characters).
+
+You must respond only with a valid JSON object (no markdown, no extra fields, no code fences), using this structure:                       
+
+{
+  "title": "...",
+  "body": "...",
+  "meta": "..."
+}
+
+Do not add explanations, extra line breaks, comments, or any characters outside the JSON object.
+
+Ensure the response is a valid JSON object, ready to parse.
+{%- endmacro %}
+
+
+
+
+{% macro correction_title(bad_title, length) -%}
+The title you generated ("{{ bad_title }}") is too long ({{ length }} chars).
+Please return **only** a JSON object (no markdown, no extra fields, no code fences) with a `title` field ≤ 60 chars using this structure:
+
+{"title":"..."}
+
+Do not add explanations, extra line breaks, comments, or any characters outside the JSON object.
+
+Ensure the response is a valid JSON object, ready to parse.
+
+{%- endmacro %}
+
+
+
+
+{% macro correct_kw_in_body(body, keyword) -%}
+
+Correct the {{ body }} to include the keyword "{{ keyword }}".
+
+Please return **only** a JSON object with a single field `body` that **must** include that keyword, for example:
+
+{"body":"...your corrected paragraph including {{ keyword }}..."}
+
+{%- endmacro %}
+
+
+
+
+
+{% macro validate_language(text, language_name) -%}
+
+Check that the following text is written 100% in {{ language_name }} (no mixing of other languages).  
+Please answer **only** "yes" or "no".
+
+---
+{{ text }}
+---
+{%- endmacro %}
+
+
+{% macro correction_language(text, locale) -%}
+
+Re-write the following text {{ text }}, it needs to be 100% in the language {{ locale }} (no mixing of other languages).  
+
+Please return **only** a JSON object with a single field `body` field containing the fully localized text, for example:
+
+{"body":"...your corrected text..."}
+
+{%- endmacro %}

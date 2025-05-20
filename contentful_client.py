@@ -37,12 +37,12 @@ def create_draft_entry(locale, keyword, product, content):
       }
     }
     
-    print(payload) # DEBUG
+    #print(payload) # DEBUG
   
     # Make the POST request
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-    # Show the response status
+    # Show the response status - Debugging purposes
     if response.status_code == 201:
         print("✅ Draft sucessfully created")
         print("Entry ID:", response.json().get("sys", {}).get("id"))
@@ -51,4 +51,4 @@ def create_draft_entry(locale, keyword, product, content):
         print("Status:", response.status_code)
         print("Mensaje:", response.text)
 
-    return response.json()
+    return response
