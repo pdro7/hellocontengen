@@ -11,7 +11,6 @@ To evolve this pipeline to support 10+ locales, multiple content types, and an e
 - This will allow to tweak tone, examples, or instructions per locale without duplicating shared logic.
 
 #### Translation Memory Integration
-- Deploy a lightweight SQLite-based cache or connect to an external TMS (e.g. Phrase, Lokalise).
 - Store validated translations of product names, feature bullets, and boilerplate so repeated LLM calls for identical fragments are skipped—improving consistency and reducing token usage.
 
 ---
@@ -23,11 +22,11 @@ To evolve this pipeline to support 10+ locales, multiple content types, and an e
 - Each type has its own JSON schema for draft entries.
 
 #### Templated Prompts per Type
-- In `prompts.jinja`, author macros for each content type:
-  - **Product Pages**: Accept product attributes, key features, technical specs; output intro, detailed description, and a spec table.
-  - **FAQs**: Accept a list of questions; output succinct, SEO-optimized Q&A entries.
+- In `prompts.jinja`, macros for each content type:
+  - **Product Pages**: Accept product attributes, key features, technical specs; intro, detailed description, and a spec table.
+  - **FAQs**: Accept a list of questions; SEO-optimized Q&A entries.
 
-#### Generic Orchestrator Extension
+#### Generic input Extension
 - Refactor the pipeline’s entrypoint to accept a `content_type` parameter.
 - Based on that parameter, pick the right prompt macro, input data, and Contentful API endpoint.
 

@@ -60,8 +60,8 @@ CONTENTFUL_ACCESS_TOKEN="your_access_token"
 ## Usage
 
 1. **Prepare Input Data**
-   - Update `data/products.csv` with product information
-   - Modify `data/keywords.csv` with target keywords per locale
+   -  `data/products.csv` with product information
+   -  `data/keywords.csv` with target keywords per locale
 
 2. **Run Pipeline**
    ```
@@ -160,6 +160,8 @@ All operations are logged to `logs/pipeline.json` with:
 1. **Random Product Selection**  
    - I randomly select one product from the provided `data/products.csv` on each run.  
    - This demonstrates the pipeline’s ability to handle any product without hard-coding a specific ID.
+   - Would be good idead to relate keywords_list data with the products data and also include the names normally used
+     for the products in every locale.
 
 2. **Fixed Locales**  
    - I focus on exactly two locales for this POC:  
